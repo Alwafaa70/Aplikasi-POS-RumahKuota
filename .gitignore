@@ -34,3 +34,5 @@ temp_*.php
 temp_*.blade.php
 sync_agregasi.php
 seed_history.php
+pos.zip
+.env.alwaysdata
