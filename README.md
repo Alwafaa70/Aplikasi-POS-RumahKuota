@@ -1,4 +1,4 @@
-# 🛒 Rumah Kuota POS — Sistem Informasi Ritel Multi-Cabang & Smart Inventory Management
+# 🛒 Rumah Kuota POS — Multi-Branch Retail Information System & Smart Inventory Management
 
 <p align="center">
   <img src="https://img.shields.io/badge/Laravel-11.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 11" />
@@ -9,9 +9,83 @@
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License MIT" />
 </p>
 
+<p align="center">
+  <a href="#-english-version"><b>English</b></a> • <a href="#-versi-bahasa-indonesia"><b>Bahasa Indonesia</b></a>
+</p>
+
 ---
 
-## 📌 Ringkasan Eksekutif (Executive Summary)
+## 🌐 English Version
+
+### 📌 Executive Summary
+
+**Rumah Kuota POS** is an enterprise-grade multi-branch retail management and Point of Sale (POS) platform integrated with an **Intelligent Inventory Control System**. 
+
+The application is engineered to resolve two fundamental inventory risks in multi-location telecommunications and electronics accessories retail:
+1. **Stockouts (Lost Sales)**: Prevented on high-velocity (*Fast-Moving*) items through real-time predictive demand threshold alerts.
+2. **Overstocking (Dead Capital)**: Eliminated on low-velocity (*Slow-Moving*) items, preserving cash flow and preventing expiration of physical vouchers.
+
+The system combines statistical **Single Exponential Smoothing (SES)** time-series forecasting with a **Dynamic Buffer Early Warning System (EWS)** governed by **FSN Analysis (*Fast, Medium, Slow-Moving*)** and empirical **7-Day Supply Chain Lead Time**.
+
+---
+
+### 🚀 Core Architecture & Key Features
+
+#### 🏪 1. Multi-Branch & Central Warehouse Distribution
+- **Hub-and-Spoke Logistics Architecture**: Centralized warehouse coordinates bulk vendor procurement, centralized stock storage, and inter-branch distribution across 9 operational retail outlets.
+- **Inter-Branch Stock Transfer with Two-Way Verification**: Real-time stock mutation with dispatch and reception acknowledgment to maintain end-to-end ledger integrity.
+- **Supplier Procurement (PO)**: Automated Purchase Order lifecycle from shortage triggers to goods receiving (*inbound processing*).
+
+#### ⚡ 2. Offline-First Progressive Web App (PWA)
+- **Zero-Downtime Offline Checkout**: POS terminals remain operational during internet disruptions via **Service Worker**, **Cache Storage API**, and client-side **IndexedDB (W3C Standard)**.
+- **Automated Background Sync**: Offline sales are cryptographically validated and synced with the central cloud database immediately upon network restoration.
+
+#### 📈 3. Single Exponential Smoothing (SES) Research Lab
+- **Adaptive Mathematical Demand Forecasting**: Computes expected demand by exponentially discounting historical sales observations:
+  $$F_{t+1} = \alpha Y_t + (1 - \alpha) F_t$$
+- **Automated Parameter Optimization (Grid Search)**: Iterates across 9 smoothing values $\alpha \in \{0.1, 0.2, \dots, 0.9\}$ to automatically select the optimal parameter yielding the lowest Mean Absolute Deviation (MAD).
+- **Global Accuracy Benchmarking (C.D. Lewis, 1982)**: Evaluates forecast precision against international Mean Absolute Percentage Error (MAPE) criteria:
+  - $\text{MAPE} < 10\%$: **Highly Accurate**
+  - $10\% \le \text{MAPE} \le 20\%$: **Good Forecasting**
+  - $20\% < \text{MAPE} \le 50\%$: **Reasonable Forecasting**
+  - $\text{MAPE} > 50\%$: **Inaccurate / Extreme Volatility**
+- **Robustness Against Zero-Sales Days (Store Closures)**: Mathematical graceful decay prevents zero-division runtime errors and dampens predictions smoothly during scheduled closures or inventory audits.
+
+#### 🛡️ 4. Dynamic Buffer Early Warning System (EWS)
+- **Dynamic Thresholding**: Replaces arbitrary manual minimum levels with mathematically calculated triggers:
+  $$\text{EWS Critical Threshold} = \text{Daily Velocity (SES)} \times \text{Procurement Lead Time (7 Days)}$$
+- **Adaptive FSN Buffer Allocation**:
+  - **Fast-Moving**: High velocity $\rightarrow$ **30% Safety Stock** buffer absorbs unexpected demand surges.
+  - **Medium-Moving**: Standard velocity $\rightarrow$ **20% Safety Stock** balance between availability and holding costs.
+  - **Slow-Moving**: Low velocity $\rightarrow$ **10% Safety Stock** minimized to protect working capital.
+- **Precision Reorder Calculation**:
+  $$\text{Restock Recommendation} = \max\Big(0, \big(\text{Cycle Demand} + \text{Safety Stock}\big) - \text{Physical On-Hand Stock}\Big)$$
+- **Deep-Linked One-Click Restock**: Direct shortcuts automatically pre-fill supplier PO forms (for Central Warehouse) or transfer dispatches (for Retail Branches).
+
+#### 💰 5. Financial Governance & Blind Closing Audit
+- **Multi-Source Cash Flow**: Segregates physical drawer cash, bank transfers, QRIS, and third-party digital gateway balances.
+- **Blind Closing Protocol**: Cashiers submit physical drawer counts without viewing theoretical system totals. Discrepancies (*cash variance*) are automatically computed to prevent internal skimming.
+- **Automated PDF Reports**: Official calculation sheets, audit trails, and executive summaries generated via DomPDF.
+
+---
+
+### 🏗️ Tech Stack
+
+| Domain | Technology | Description |
+| :--- | :--- | :--- |
+| **Backend** | Laravel 11.x (PHP 8.2+) | MVC Architecture, Eloquent ORM, RESTful API |
+| **Frontend** | Blade + Tailwind CSS 3.x | Lightweight, responsive utility-first UI |
+| **Reactivity** | Alpine.js 3.x | Declarative client-side UI state management |
+| **Data Visualization** | ApexCharts.js | Goodness-of-Fit curves comparing actual sales vs fitted forecasts |
+| **Client Storage** | IndexedDB & Cache API | Offline PWA transactional database |
+| **Server Storage** | MySQL / SQLite | Relational database with optimized indexing |
+| **Reporting Engine**| DomPDF | Official audit report & EWS summary PDF generator |
+
+---
+
+## 🇮🇩 Versi Bahasa Indonesia
+
+### 📌 Ringkasan Eksekutif
 
 **Rumah Kuota POS** adalah platform sistem informasi manajemen ritel dan kasir (*Point of Sale*) multi-cabang terpadu yang memadukan operasional kasir lini depan dengan sistem **Pengendalian Persediaan Cerdas (*Smart Inventory Control*)**.
 
@@ -23,18 +97,18 @@ Solusi yang diterapkan adalah penggabungan peramalan deret waktu **Single Expone
 
 ---
 
-## 🚀 Fitur Unggulan (Core Features)
+### 🚀 Fitur Unggulan
 
-### 🏪 1. Multi-Branch & Central Warehouse Management
+#### 🏪 1. Multi-Branch & Central Warehouse Management
 - **Struktur Hierarki Logistik**: Koordinasi antara **Gudang Pusat** (pengadaan skala besar dari supplier) dengan **Toko Cabang** (gerai penjualan lini depan).
-- **Mutasi Stok Antar-Cabang**: Pengiriman dan transfer barang antar-cabang dengan mekanisme verifikasi persetujuan (*two-way confirmation approval*).
+- **Mutasi Stok Antar-Cabang**: Pengiriman dan transfer barang antar-cabang dengan mekanisme verifikasi persetujuan dua arah (*two-way confirmation approval*).
 - **Purchase Order (PO) Supplier**: Manajemen pemesanan barang ke pemasok terintegrasi dengan pencatatan barang masuk (*inbound tracking*).
 
-### ⚡ 2. Offline-First Progressive Web App (PWA)
+#### ⚡ 2. Offline-First Progressive Web App (PWA)
 - **Operasional Tanpa Hambatan Internet**: Kasir tetap dapat melakukan transaksi penjualan saat koneksi internet terputus berkat implementasi **Service Worker**, **Cache Storage API**, dan **IndexedDB (W3C)** di sisi klien.
 - **Background Synchronization**: Data transaksi offline secara otomatis disinkronisasikan ke peladen pusat saat koneksi internet pulih tanpa risiko duplikasi data.
 
-### 📈 3. Laboratorium Riset Single Exponential Smoothing (SES)
+#### 📈 3. Laboratorium Riset Single Exponential Smoothing (SES)
 - **Model Matematis Adaptif**: Menghitung proyeksi kebutuhan stok periode mendatang dengan meredam fluktuasi permintaan masa lalu:
   $$F_{t+1} = \alpha Y_t + (1 - \alpha) F_t$$
 - **Optimasi Parameter Otomatis (*Grid Search*)**: Sistem secara otomatis menguji 9 variasi konstanta pemulusan $\alpha \in \{0.1, 0.2, \dots, 0.9\}$ dan memilih nilai $\alpha$ terbaik berdasarkan deviasi kesalahan terendah (*Mean Absolute Deviation* / MAD).
@@ -45,7 +119,7 @@ Solusi yang diterapkan adalah penggabungan peramalan deret waktu **Single Expone
   - $\text{MAPE} > 50\%$: **Kurang Akurat (*Inaccurate*)**
 - **Ketahanan Terhadap Hari Libur / Zero-Sales**: Secara matematis peramalan mengalami peredaman eksponensial halus (*smooth exponential decay*) saat toko libur tanpa terjadi *crash* pembagian dengan nol.
 
-### 🛡️ 4. Dynamic Buffer Early Warning System (EWS)
+#### 🛡️ 4. Dynamic Buffer Early Warning System (EWS)
 - **Bukan Buffer Statis**: Berbeda dengan sistem konvensional yang mematok angka batas pengaman tetap sama rata, sistem ini menghitung **Batas Kritis EWS secara dinamis**:
   $$\text{Batas Kritis EWS} = \text{Laju Tren Harian (SES)} \times \text{Lead Time Pengadaan (7 Hari)}$$
 - **Cadangan Adaptif Berbasis Analisis FSN**:
@@ -56,123 +130,98 @@ Solusi yang diterapkan adalah penggabungan peramalan deret waktu **Single Expone
   $$\text{Rekomendasi Restok} = \max\Big(0, \big(\text{Prediksi Kebutuhan Siklus} + \text{Safety Stock}\big) - \text{Sisa Stok Fisik}\Big)$$
 - **Aksi Cepat Restok (*Quick Action Deep-Link*)**: Tombol tindakan sekali klik langsung mengarahkan ke form PO Supplier (untuk Gudang Pusat) atau Kirim Mutasi Stok (untuk Cabang) dengan jumlah barang yang telah terisi otomatis.
 
-### 💰 5. Pengendalian Keuangan & Blind Closing
+#### 💰 5. Pengendalian Keuangan & Blind Closing
 - **Kas Multi-Akun**: Pemisahan pencatatan kas tunai laci (*cash drawer*), rekening bank, serta saldo aplikasi layanan pihak ketiga (Digipos, dsb.).
 - **Pengendalian Kas Internal (*Blind Closing*)**: Kasir wajib menghitung dan menginput fisik uang tunai tanpa melihat saldo kalkulasi sistem untuk mencegah manipulasi data kasir (*skimming*). Selisih kas terdeteksi secara otomatis.
 - **Laporan Laba Rugi Riil & Proyeksi Laba**: Analisis profitabilitas berbasis Harga Pokok Penjualan (HPP) per transaksi.
 
 ---
 
-## 🏗️ Arsitektur Teknologi (Tech Stack)
-
-| Lapisan | Teknologi | Deskripsi |
-| :--- | :--- | :--- |
-| **Backend Framework** | Laravel 11.x | PHP 8.2+ MVC Framework, Eloquent ORM, RESTful API |
-| **Frontend UI** | Blade + Tailwind CSS 3.x | Desain antarmuka responsif, modern, dan ringan |
-| **Interaktivitas UI** | Alpine.js 3.x | Manajemen state reaktif di sisi antarmuka pengguna |
-| **Visualisasi Data** | ApexCharts.js | Grafik kurva *Goodness of Fit* data aktual vs prediksi SES |
-| **Basis Data Klien** | IndexedDB & Cache Storage | Penyimpanan transaksi offline pada peramban kasir (PWA) |
-| **Basis Data Peladen** | MySQL / SQLite | Penyimpanan data relasional terpusat dengan indexing optimal |
-| **Mesin Dokumen** | DomPDF (`barryvdh/laravel-dompdf`) | Ekspor laporan kalkulasi SES dan rekapitulasi buffer EWS ke format PDF |
-| **Ikonografi & Font** | FontAwesome 6 & Google Outfit | Tipografi dan ikon visual modern |
-
----
-
-## 📂 Struktur Direktori Utama
+## 📂 Struktur Direktori Utama (Project Structure)
 
 ```text
 aplikasi-pos/
 ├── app/
-│   ├── Http/Controllers/        # Pengendali alur logika (POS, Owner, EWS, Admin, Mutasi, Kas)
-│   ├── Models/                 # Model data Eloquent (Barang, Cabang, Transaksi, Pengaturan EWS, dll.)
-│   └── Services/               # Layanan logika bisnis inti:
-│       ├── SesForecastingService.php   # Algoritma SES, Grid Search Alpha, MAD & MAPE
-│       └── EwsService.php              # Logika Ambang Batas EWS & Klasifikasi FSN
+│   ├── Http/Controllers/        # Logic controllers (POS, Owner, EWS, Admin, Mutasi, Kas)
+│   ├── Models/                 # Eloquent ORM models (Barang, Cabang, Transaksi, Pengaturan EWS, etc.)
+│   └── Services/               # Core domain services:
+│       ├── SesForecastingService.php   # SES Algorithm, Alpha Grid Search, MAD & MAPE
+│       └── EwsService.php              # EWS Threshold Engine & FSN Classification
 ├── database/
-│   ├── migrations/             # Definisi skema tabel basis data
-│   └── seeders/                # Data sampel transaksi riil 6 bulan & profil toko
+│   ├── migrations/             # Database schema migrations
+│   └── seeders/                # 6-Month historical sales dataset & store profiles
 ├── public/
-│   ├── service-worker.js       # Worker PWA untuk offline caching & background sync
-│   └── manifest.json           # Manifest instalasi aplikasi PWA
+│   ├── service-worker.js       # PWA offline cache engine & background sync
+│   └── manifest.json           # Web App Manifest
 ├── resources/
-│   └── views/                  # Tampilan antarmuka Blade:
-│       ├── owner/              # Dashboard Owner, Laboratorium SES Debugger, Monitor EWS
-│       ├── admin/              # Dashboard Admin Gudang Pusat, PO Pembelian Supplier
-│       ├── kasir/              # Antarmuka Kasir POS & Blind Closing
-│       └── distribusi/         # Modul Mutasi Logistik Antar-Cabang
+│   └── views/                  # Blade templates:
+│       ├── owner/              # Owner Dashboard, SES Research Lab, EWS Monitor
+│       ├── admin/              # Central Warehouse Dashboard, Supplier PO
+│       ├── kasir/              # POS Checkout & Daily Blind Closing
+│       └── distribusi/         # Inter-Branch Logistics Transfer
 └── routes/
-    └── web.php                 # Rute navigasi dan otorisasi berbasis peran (Role-Based Access)
+    └── web.php                 # Role-based route definitions
 ```
 
 ---
 
-## 💻 Panduan Instalasi & Menjalankan Proyek
+## 💻 Panduan Instalasi & Menjalankan Proyek (Getting Started)
 
-### Prasyarat Sistem
-- PHP >= 8.2 (dengan ekstensi `pdo`, `mbstring`, `openssl`, `curl`, `gd`)
+### Prerequisites
+- PHP >= 8.2 (`pdo`, `mbstring`, `openssl`, `curl`, `gd` extensions enabled)
 - Composer >= 2.x
 - Node.js >= 18.x & NPM
 - Git
 
-### Langkah Instalasi
+### Quick Setup
 
-1. **Klon Repositori**:
-   ```bash
-   git clone https://github.com/Alwafaa70/Aplikasi-POS-RumahKuota.git
-   cd Aplikasi-POS-RumahKuota
-   ```
+```bash
+# 1. Clone repository
+git clone https://github.com/Alwafaa70/Aplikasi-POS-RumahKuota.git
+cd Aplikasi-POS-RumahKuota
 
-2. **Pasang Dependensi PHP (Composer)**:
-   ```bash
-   composer install
-   ```
+# 2. Install PHP dependencies
+composer install
 
-3. **Pasang Dependensi Frontend & Build Aset**:
-   ```bash
-   npm install
-   npm run build
-   ```
+# 3. Install frontend packages & build assets
+npm install
+npm run build
 
-4. **Konfigurasi Berkas Lingkungan (`.env`)**:
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
+# 4. Environment configuration
+cp .env.example .env
+php artisan key:generate
 
-5. **Migrasi dan Seed Data Awal Basis Data**:
-   ```bash
-   php artisan migrate --seed
-   ```
-   *(Opsional) Untuk memuat data simulasi historis penjualan 6 bulan penuh:*
-   ```bash
-   php artisan db:seed --class=CompleteSalesHistorySeeder
-   php artisan ews:auto-calculate
-   ```
+# 5. Database setup & initial seeding
+php artisan migrate --seed
 
-6. **Jalankan Peladen Lokal**:
-   ```bash
-   php artisan serve
-   ```
-   Buka peramban dan akses: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+# (Optional) Seed realistic 6-month historical dataset and calculate EWS:
+php artisan db:seed --class=CompleteSalesHistorySeeder
+php artisan ews:auto-calculate
+
+# 6. Run local development server
+php artisan serve
+```
+
+Visit: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ---
 
-## 🔑 Akun Bawaan untuk Pengujian (Default Credentials)
+## 🔑 Default Credentials
 
-| Role Pengguna | Username | Password | Lingkup Hak Akses |
+| Role | Username | Password | Scope |
 | :--- | :---: | :---: | :--- |
-| **Owner (Pemilik)** | `owner` | `password` | Akses penuh seluruh cabang, Laboratorium SES, Monitoring EWS, Keuangan Global |
-| **Admin Gudang** | `admin` | `password` | Manajemen stok Gudang Pusat, PO Supplier, Pengiriman Mutasi Cabang |
-| **Kasir Cabang** | `kasir1` | `password` | Transaksi POS Cabang 1, Setoran Kasir, Blind Closing Harian |
+| **Owner** | `owner` | `password` | Full enterprise control, SES Research Lab, EWS Engine, Global Financials |
+| **Admin Gudang** | `admin` | `password` | Central Warehouse inventory, Supplier Purchase Orders, Logistics dispatch |
+| **Kasir Cabang** | `kasir1` | `password` | Point of Sale (POS) Cabang 1, Daily Blind Closing |
 
 ---
 
-## 📄 Lisensi
+## 📄 License
 
-Proyek ini dilisensikan di bawah lisensi terbuka [MIT License](LICENSE).
+This software is licensed under the open-source [MIT License](LICENSE).
 
 ---
 
 <p align="center">
-  Dikembangkan dengan dedikasi untuk memajukan efisiensi industri ritel multi-cabang di Indonesia 🇮🇩
+  Crafted with dedication for modern retail enterprise excellence 🇮🇩
 </p>
